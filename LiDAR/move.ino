@@ -62,24 +62,41 @@ void setup() {
 
 void move() {
 
-  for (int pos1 = 60; pos1 <= 150;) {
-    for (int pos2 = 20; pos2 <= 180; pos2++) {
+  // 초기 위치 설정 (원점에 위치시키기)
+  int initialPosition1 = 0;    // 모터 1의 초기 위치 (예: 0)
+  int initialPosition2 = 0; // 모터 2의 초기 위치 (예: -180도)
+  
+  // 모터 1, 2 초기 위치로 이동
+  dxl_wb.goalPosition(DXL_ID_1, initialPosition1);
+  dxl_wb.goalPosition(DXL_ID_2, initialPosition2);
+  delay(1000);
+
+  for (int pos1 = 268; pos1 <= 2007;) {
+    for (int pos2 = 268; pos2 <= 2409; pos2 += 14) {
       dxl_wb.goalPosition(DXL_ID_2, pos2);
-      Serial.println(pos1); 
-      Serial.println(pos2);
+      Serial.println("s");
+      Serial.print(pos1);
+      Serial.print(" "); 
+      Serial.print(pos2);
+      Serial.print(" ");
       Serial.println(lidarLite.distance());
+      Serial.println("e"); //무결성 검증
     }
-    pos1 = pos1 + 5;
+    pos1 = pos1 + 14;
     dxl_wb.goalPosition(DXL_ID_1, pos1);
   
 
-    for(int pos2 = 180; pos2 >= 20; pos2--) {
+    for(int pos2 = 2409; pos2 >= 268; pos2 -= 14) {
       dxl_wb.goalPosition(DXL_ID_2, pos2);
-      Serial.println(pos1); 
-      Serial.println(pos2);
+      Serial.println("s");
+      Serial.print(pos1);
+      Serial.print(" "); 
+      Serial.print(pos2);
+      Serial.print(" ");
       Serial.println(lidarLite.distance());
+      Serial.println("e"); //무결성 검증
     }
-    pos1 = pos1 + 5;
+    pos1 = pos1 + 14;
     dxl_wb.goalPosition(DXL_ID_1, pos1);
   }
 }
