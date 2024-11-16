@@ -5,6 +5,8 @@
 DynamixelWorkbench dxl_wb;          // Dynamixel Workbench 객체 생성
 LIDARLite lidarLite; //lidar object
 
+//bool stop_requested = false;  // check STOP signal 
+
 // Define motor IDs and communication settings
 #define DXL_ID_1         1           // 첫 번째 다이나믹셀 ID
 #define DXL_ID_2         2           // 두 번째 다이나믹셀 ID
@@ -12,7 +14,7 @@ LIDARLite lidarLite; //lidar object
 #define DEVICENAME       ""          // OpenCR의 포트 이름
 
 #define DXL_MIN_POSITION 0           // 최소 위치 (0도)
-#define DXL_MAX_POSITION 1023        // 최대 위치 (300도)
+#define DXL_MAX_POSITION 4096        // 최대 위치 (300도)
 #define DXL_MOVING_SPEED 100         // 모터 속도
 
 void setup() {
@@ -49,69 +51,58 @@ void setup() {
     Serial.print(DXL_ID_2);
     Serial.println(": 모터 연결 실패");
   }
-
-  // 모터 위치 제어 모드 설정
   dxl_wb.torqueOff(DXL_ID_1);
   dxl_wb.torqueOff(DXL_ID_2);
   dxl_wb.setOperatingMode(DXL_ID_1, 3);
   dxl_wb.setOperatingMode(DXL_ID_2, 3);
   dxl_wb.torqueOn(DXL_ID_1);
   dxl_wb.torqueOn(DXL_ID_2);
-
 }
 
 void move() {
 
   // 초기 위치 설정 (원점에 위치시키기)
-  int initialPosition1 = 0;    // 모터 1의 초기 위치 (예: 0)
-  int initialPosition2 = 0; // 모터 2의 초기 위치 (예: -180도)
+  int initialPosition1 = 512;    
+  int initialPosition2 = 512; 
   
   // 모터 1, 2 초기 위치로 이동
   dxl_wb.goalPosition(DXL_ID_1, initialPosition1);
   dxl_wb.goalPosition(DXL_ID_2, initialPosition2);
   delay(1000);
 
-  for (int pos1 = 268; pos1 <= 2007;) {
-    for (int pos2 = 268; pos2 <= 2409; pos2 += 14) {
+  for (int pos1 = 512; pos1 >= 1536;) {
+    for (int pos2 = 512; pos2 <= 1536; pos2 += 2) {
       dxl_wb.goalPosition(DXL_ID_2, pos2);
-      Serial.println("s");
-      Serial.print(pos1);
-      Serial.print(" "); 
-      Serial.print(pos2);
-      Serial.print(" ");
-      Serial.println(lidarLite.distance());
-      Serial.println("e"); //무결성 검증
+      Serial.println((String) "s, " + pos1 + ", " + pos2 + ", " + lidarLite.distance() + ", " + (String) "e");
     }
-    pos1 = pos1 + 14;
+    pos1 = pos1 + 12;
     dxl_wb.goalPosition(DXL_ID_1, pos1);
+    delay(100);
   
 
-    for(int pos2 = 2409; pos2 >= 268; pos2 -= 14) {
+    for(int pos2 = 1536; pos2 >= 512; pos2 -= 2) {
       dxl_wb.goalPosition(DXL_ID_2, pos2);
-      Serial.println("s");
-      Serial.print(pos1);
-      Serial.print(" "); 
-      Serial.print(pos2);
-      Serial.print(" ");
-      Serial.println(lidarLite.distance());
-      Serial.println("e"); //무결성 검증
+      Serial.println((String) "s, " + pos1 + ", " + pos2 + ", " + lidarLite.distance() + ", " + (String) "e");
     }
-    pos1 = pos1 + 14;
+    pos1 = pos1 + 12;
     dxl_wb.goalPosition(DXL_ID_1, pos1);
+    delay(100);
+
   }
 }
 
 void loop() {
-  // 초기 위치 설정 (원점에 위치시키기)
-  int initialPosition1 = 0;    // 모터 1의 초기 위치 (예: 0)
-  int initialPosition2 = 0; // 모터 2의 초기 위치 (예: -180도)
-
-  // 모터 1, 2 초기 위치로 이동
-  dxl_wb.goalPosition(DXL_ID_1, initialPosition1);
-  dxl_wb.goalPosition(DXL_ID_2, initialPosition2);
-  delay(1000);
-
-
   move();
-  Serial.write("--End of Scan--");
 }
+
+// void loop() {
+//   if (Serial.available() > 0){
+//      String signal = Serial.readStringUntil('\n');  // 신호를 문자열로 읽기
+
+//     if (signal == "START") {
+//       stop_requested = false;  // START 신호 시 동작 재개
+//       move();
+//       Serial.println("--End of Scan--");
+//     } 
+//   }
+//}
