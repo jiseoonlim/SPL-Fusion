@@ -10,7 +10,7 @@ f = open(f'{filename}.txt',"w+")
 ArduinoSerial = serial.Serial('COM6', 115200)
 
 def format(f): 
-    return "%.3f" %f
+    return "%.0f" %f
 
 def readSerial():
     read = ArduinoSerial.readline().decode('utf-8') 
@@ -48,8 +48,8 @@ def read_serial_data():
 
 
 def change_angle(step):
-    rad = step * (2*pi)/4096 #1 바퀴에 4096 steps
-    return rad
+    angle = step * (2*pi)/4096 #1 바퀴에 4096 steps
+    return angle
 
 
 def write_to_file():
@@ -58,16 +58,16 @@ def write_to_file():
     while (True):
         read_serial_data()
 
-        if (distance > -1):
+        if (distance > 5):
 
             motor1 = change_angle(motor1) # step -> angle(') -> rad
-            motor2 = change_angle(motor2)
+            motor2 = (motor2)
 
-            x = ((distance*cos(motor1)*cos(motor2)))
-            y = ((distance*cos(motor1)*sin(motor2)))
-            z = ((distance*sin(motor1)))
-            print(f"변환pos1: {x}, pos2: {y}, distance: {z}")
-
+            x = ((distance*sin(motor1)*cos(motor2)))
+            y = ((distance*sin(motor1)*sin(motor2)))
+            z = ((distance*cos(motor1)))
+            # print(f"변환pos1: {x}, pos2: {y}, distance: {z}")
+            
             x = format(x)
             y = format(y)
             z = format(z)
