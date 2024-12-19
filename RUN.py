@@ -61,10 +61,10 @@ def write_to_file():
         if (distance > 5):
 
             motor1 = change_angle(motor1) # step -> angle(') -> rad
-            motor2 = (motor2)
+            motor2 = change_angle(motor2)
 
-            x = ((distance*sin(motor1)*cos(motor2)))
-            y = ((distance*sin(motor1)*sin(motor2)))
+            x = ((distance*sin(motor1)*cos(motor2-pi)))
+            y = ((distance*sin(motor1)*sin(motor2-pi)))
             z = ((distance*cos(motor1)))
             # print(f"변환pos1: {x}, pos2: {y}, distance: {z}")
             
