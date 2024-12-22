@@ -4,7 +4,7 @@ import pandas as pd
 fig = plt.figure()
 ax = plt.axes(projection = '3d')
 
-data = pd.read_csv('C:/Users/IBSLAB/Desktop/SPL-Fusion/1219_1.txt', sep=",", header=None)
+data = pd.read_csv('C:/Users/IBSLAB/Desktop/SPL-Fusion/FULL_TEST.txt', sep=",", header=None)
 data.columns = ['x','y','z']
 
 ax.scatter(data.x, data.y, data.z, s=2, marker='.', cmap='plasma', c =data.z)

@@ -10,11 +10,11 @@ bool stop_requested = false;  // check STOP signal
 // Define motor IDs and communication settings
 #define DXL_ID_1         1           // 첫 번째 다이나믹셀 ID
 #define DXL_ID_2         2           // 두 번째 다이나믹셀 ID
-#define BAUDRATE         1000000       // 통신 속도
+#define BAUDRATE         1000000     // 통신 속도
 #define DEVICENAME       ""          // OpenCR의 포트 이름
 
 #define DXL_MIN_POSITION 0           // 최소 위치 (0도)
-#define DXL_MAX_POSITION 4096        // 최대 위치 (300도)
+#define DXL_MAX_POSITION 4096        // 최대 위치 (360도)
 #define DXL_MOVING_SPEED 1000         // 모터 속도
 
 void setup() {
@@ -26,7 +26,8 @@ void setup() {
   // Dynamixel 초기화 및 통신 설정
   if (dxl_wb.init(DEVICENAME, BAUDRATE)) {
     Serial.println("Dynamixel 초기화 성공");
-  } else {
+  }
+  else {
     Serial.println("Dynamixel 초기화 실패");
     while (1);                      // 초기화 실패 시 멈춤
   }
@@ -65,17 +66,18 @@ void setup() {
   uint32_t profile_acceleration = 32737;  
   dxl_wb.writeRegister(DXL_ID_1, "Profile_Acceleration", profile_acceleration);
   dxl_wb.writeRegister(DXL_ID_2, "Profile_Acceleration", profile_acceleration);
-  }
+
+}
 
 void move() {
-  int initialPosition1 = 512;    
-  int initialPosition2 = 0; 
+  int initialPosition1 = 512;   // Rotation starting point(Can change it)
+  int initialPosition2 = 0;   // Rotation starting point(Can change it)
   dxl_wb.goalPosition(DXL_ID_1, initialPosition1);
   dxl_wb.goalPosition(DXL_ID_2, initialPosition2);
   delay(1000);
 
-  for (int pos1 = 512; pos1 <= 1536;) {
-    for (int pos2 = 0; pos2 <= 2048; pos2 += 16) {
+  for (int pos1 = 512; pos1 <= 1536;) { // (Recommended setting the same as the initialPosition)
+    for (int pos2 = 1024; pos2 <= 2048; pos2 += 16) {
       dxl_wb.goalPosition(DXL_ID_2, pos2);
       Serial.println((String) "s, " + pos1 + ", " + pos2 + ", " + lidarLite.distance() + ", " + (String) "e");
     }
@@ -84,7 +86,7 @@ void move() {
     delay(100);
   
 
-    for(int pos2 = 2048; pos2 >= 0; pos2 -= 16) {
+    for(int pos2 = 2048; pos2 >= 1024; pos2 -= 16) {
       dxl_wb.goalPosition(DXL_ID_2, pos2);
       Serial.println((String) "s, " + pos1 + ", " + pos2 + ", " + lidarLite.distance() + ", " + (String) "e");
     }
@@ -96,10 +98,11 @@ void move() {
 }
 
 void loop() {
-  int initialPosition1 = 512;    
-  int initialPosition2 = 512; 
+  int initialPosition1 = 0;    // Check for initial positioning
+  int initialPosition2 = 0;    // Check for initial positioning
   dxl_wb.goalPosition(DXL_ID_1, initialPosition1);
   dxl_wb.goalPosition(DXL_ID_2, initialPosition2);
+
   if (Serial.available() > 0){
      String signal = Serial.readStringUntil('\n');  // 신호를 문자열로 읽기
 
