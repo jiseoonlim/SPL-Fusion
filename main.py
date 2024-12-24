@@ -9,6 +9,9 @@ print("Enter name of file to write to: ")
 filename = input()
 f = open(f'{filename}.txt',"w+")
 
+def format(f): 
+    return "%.0f" %f
+
 def send_signal():
     print("Enter start signal : ")
     signal = input()
