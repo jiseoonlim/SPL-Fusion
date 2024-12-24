@@ -44,20 +44,25 @@ def read_serial_data():
             print(f"pos1: {motor1}, pos2: {motor2}, distance: {distance}")
 
 def get_angle():
-    user_input = input("Enter 4 numbers separated by space (e.g., 100 200 300 400): ")
+    user_input = input("Enter 4 numbers (e.g., 30 45 90 0): ")
 
 # 입력값 유효성 검사
     numbers = user_input.split()
     if len(numbers) == 4 and all(num.isdigit() for num in numbers):
+        numbers = [str(int(int(num) * 4096 / 360)) for num in numbers]
         message = " ".join(numbers)
-        ArduinoSerial.write((message + "\n").encode())  
+        ArduinoSerial.write((message + "\n").encode()) 
         print(f"Sent: {message}")
     else:
         print("Invalid input. Please enter exactly 4 numbers separated by space.")
 
-def change_angle(step):
-    angle = step * (2*pi)/4096 #1 바퀴에 4096 steps
-    return angle
+def change_step(angle):
+    step = angle * 4096/360 
+    return step
+
+def change_rad(angle):
+    rad = angle * (2*pi)/360 #1 바퀴에 4096 steps
+    return rad
 
 def write_to_file():
     global motor1, motor2, distance
@@ -67,8 +72,8 @@ def write_to_file():
 
         if (distance > 5):
 
-            motor1 = change_angle(motor1) # step -> angle(') -> rad
-            motor2 = change_angle(motor2)
+            motor1 = change_rad(motor1) # step -> angle(') -> rad
+            motor2 = change_rad(motor2)
 
             x = (distance*sin(motor1)*sin(motor2))
             y = (distance*sin(motor1)*cos(motor2))

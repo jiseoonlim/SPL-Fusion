@@ -17,6 +17,8 @@ bool stop_requested = false;  // check STOP signal
 #define DXL_MAX_POSITION 4096        // 최대 위치 (360도)
 #define DXL_MOVING_SPEED 1000         // 모터 속도
 
+int step = 16; //단위는 step
+
 void setup() {
   Serial.begin(115200);              // Serial 모니터 시작
 
@@ -69,28 +71,37 @@ void setup() {
 
 }
 
-void move() {
-  int initialPosition1 = 512;   // Rotation starting point(Can change it)
-  int initialPosition2 = 0;   // Rotation starting point(Can change it)
-  dxl_wb.goalPosition(DXL_ID_1, initialPosition1);
-  dxl_wb.goalPosition(DXL_ID_2, initialPosition2);
-  delay(1000);
+int pos1_start = 0;
+int pos1_fin = 0;
+int pos2_start = 0;
+int pos2_fin = 0;
 
-  for (int pos1 = 512; pos1 <= 1536;) { // (Recommended setting the same as the initialPosition)
-    for (int pos2 = 1024; pos2 <= 2048; pos2 += 16) {
+void read_serial() {
+    pos1_start = Serial.parseInt();  // 첫 번째 숫자 읽기
+    pos1_fin = Serial.parseInt();    // 두 번째 숫자 읽기
+    pos2_start = Serial.parseInt();  // 세 번째 숫자 읽기
+    pos2_fin = Serial.parseInt();    // 네 번째 숫자 읽기
+
+    move();
+}
+
+
+void move() {
+  for (int pos1 = pos1_start; pos1 <= pos1_fin;) { // (Recommended setting the same as the initialPosition)
+    for (int pos2 = pos2_start; pos2 <= pos2_fin; pos2 += step) {
       dxl_wb.goalPosition(DXL_ID_2, pos2);
       Serial.println((String) "s, " + pos1 + ", " + pos2 + ", " + lidarLite.distance() + ", " + (String) "e");
     }
-    pos1 = pos1 + 16;
+    pos1 = pos1 + step;
     dxl_wb.goalPosition(DXL_ID_1, pos1);
     delay(100);
   
 
-    for(int pos2 = 2048; pos2 >= 1024; pos2 -= 16) {
+    for(int pos2 = pos2_fin; pos2 >= pos2_start; pos2 -= step) {
       dxl_wb.goalPosition(DXL_ID_2, pos2);
       Serial.println((String) "s, " + pos1 + ", " + pos2 + ", " + lidarLite.distance() + ", " + (String) "e");
     }
-    pos1 = pos1 + 16;
+    pos1 = pos1 + step;
     dxl_wb.goalPosition(DXL_ID_1, pos1);
     delay(100);
 
@@ -103,13 +114,8 @@ void loop() {
   dxl_wb.goalPosition(DXL_ID_1, initialPosition1);
   dxl_wb.goalPosition(DXL_ID_2, initialPosition2);
 
-  if (Serial.available() > 0){
-     String signal = Serial.readStringUntil('\n');  // 신호를 문자열로 읽기
-
-    if (signal == "START") {
-      stop_requested = false;  // START 신호 시 동작 재개
-      move();
-      Serial.println("--End of Scan--");
-    } 
+  if (Serial.available()){
+    read_serial();
   }
+  
 }
