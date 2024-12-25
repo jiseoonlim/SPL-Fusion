@@ -60,8 +60,8 @@ def change_step(angle):
     step = angle * 4096/360 
     return step
 
-def change_rad(angle):
-    rad = angle * (2*pi)/360 #1 바퀴에 4096 steps
+def change_rad(step):
+    rad = step * (2*pi)/4096 
     return rad
 
 def write_to_file():
@@ -76,7 +76,7 @@ def write_to_file():
             motor2 = change_rad(motor2)
 
             x = (distance*sin(motor1)*sin(motor2))
-            y = (distance*sin(motor1)*cos(motor2))
+            y = -(distance*sin(motor1)*cos(motor2))
             z = ((distance*cos(motor1)))
             # print(f"변환pos1: {x}, pos2: {y}, distance: {z}")
             
