@@ -46,15 +46,21 @@ def read_serial_data():
 def get_angle():
     user_input = input("Enter 4 numbers (e.g., 30 45 90 0): ")
 
-# 입력값 유효성 검사
-    numbers = user_input.split()
-    if len(numbers) == 4 and all(num.isdigit() for num in numbers):
-        numbers = [str(int(int(num) * 4096 / 360)) for num in numbers]
+    if not user_input.strip():  # input value empty
+        default_numbers = [60, 120, 60, 120]
+        numbers = [str(int(num * 4096 / 360)) for num in default_numbers]
         message = " ".join(numbers)
-        ArduinoSerial.write((message + "\n").encode()) 
-        print(f"Sent: {message}")
+        ArduinoSerial.write((message + "\n").encode())
+        print(f"Sent default: {message}")
     else:
-        print("Invalid input. Please enter exactly 4 numbers separated by space.")
+        numbers = user_input.split()
+        if len(numbers) == 4 and all(num.isdigit() for num in numbers):
+            numbers = [str(int(int(num) * 4096 / 360)) for num in numbers]
+            message = " ".join(numbers)
+            ArduinoSerial.write((message + "\n").encode())
+            print(f"Sent: {message}")
+        else:
+            print("Invalid input. Please enter exactly 4 numbers separated by space.")
 
 def change_step(angle):
     step = angle * 4096/360 
