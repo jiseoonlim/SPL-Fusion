@@ -78,6 +78,7 @@ int pan_fin = 0;
 int32_t pan_position = 0;
 int32_t tilt_position = 0;
 
+
 void read_serial() {
     tilt_start = Serial.parseInt();  // 첫 번째 숫자 읽기
     tilt_fin = Serial.parseInt();    // 두 번째 숫자 읽기
@@ -91,34 +92,24 @@ void read_serial() {
 void move() {
   for (int tilt = tilt_start; tilt <= tilt_fin; tilt += step) { 
     dxl_wb.goalPosition(DXL_ID_1, tilt);
-
-    do {
-      dxl_wb.getPresentPositionData(DXL_ID_1, &tilt_position);
-      delay(10); 
-    }
-    while (abs(tilt_position - tilt) >= 4);
-
     for (int pan = pan_start; pan <= pan_fin; pan += step) {
+      dxl_wb.goalPosition(DXL_ID_1, tilt);
       dxl_wb.goalPosition(DXL_ID_2, pan);
-      do {
-        dxl_wb.getPresentPositionData(DXL_ID_2, &pan_position);
-        delay(10); 
-      }
-      while (abs(pan_position - pan) >= 4);
-      Serial.println((String) "s, " + tilt + ", " + pan + ", " + lidarLite.distance() + ", " + (String) "e");
+      dxl_wb.getPresentPositionData(DXL_ID_1, &tilt_position);
+      dxl_wb.getPresentPositionData(DXL_ID_2, &pan_position);
+      Serial.println((String) "s, " + tilt + ", " + pan + ", " + tilt_position + ", " + pan_position + ", " + (String) "e");
     }
     delay(100);
   
-  for (int pan = pan_start; pan >= pan_fin; pan -= step) {
+
+    for(int pan = pan_fin; pan >= pan_start; pan -= step) {
       dxl_wb.goalPosition(DXL_ID_2, pan);
-      do {
-        dxl_wb.getPresentPositionData(DXL_ID_2, &pan_position);
-        delay(10); 
-      }
-      while (abs(pan_position - pan) >= 4);
-      Serial.println((String) "s, " + tilt + ", " + pan + ", " + lidarLite.distance() + ", " + (String) "e");
+      dxl_wb.getPresentPositionData(DXL_ID_1, &tilt_position);
+      dxl_wb.getPresentPositionData(DXL_ID_2, &pan_position);
+      Serial.println((String) "s, " + tilt + ", " + pan + ", " + tilt_position + ", " + pan_position + ", " + (String) "e");
     }
     delay(100);
+
   }
 }
 
@@ -133,3 +124,4 @@ void loop() {
   }
   
 }
+
