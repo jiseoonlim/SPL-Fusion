@@ -7,7 +7,7 @@ ArduinoSerial = serial.Serial('COM6', 115200)
 
 print("Enter name of file to write to: ")
 filename = input()
-f = open(f'{filename}.txt',"w+")
+f = open(f'test.txt',"w+")
 
 def format(f): 
     return "%.0f" %f
