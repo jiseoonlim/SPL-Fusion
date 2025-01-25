@@ -20,15 +20,15 @@ def send_signal():
     time.sleep(1)
     
 def parse_data(line):
-    global motor1, motor2, distance
+    global tilt, pan, distance
     distance = -1
     try:
         # parsing each data
         parts = line.split(',')
-        motor1 = int(parts[1].strip())
-        motor2 = int(parts[2].strip())
+        tilt = int(parts[1].strip())
+        pan = int(parts[2].strip())
         distance = int(parts[3].strip())
-        return motor1, motor2, distance
+        return tilt, pan, distance
     except (IndexError, ValueError):
         # if some data has an error return None
         return None
@@ -40,8 +40,8 @@ def read_serial_data():
     if line.startswith("s,") and line.endswith(", e"):
         data = parse_data(line)
         if data:
-            motor1, motor2, distance = data
-            print(f"pos1: {motor1}, pos2: {motor2}, distance: {distance}")
+            tilt, pan, distance = data
+            print(f"pos1: {tilt}, pos2: {pan}, distance: {distance}")
 
 def get_angle():
     user_input = input("Enter 4 numbers (e.g., 30 45 90 0): ")
@@ -71,19 +71,19 @@ def change_rad(step):
     return rad
 
 def write_to_file():
-    global motor1, motor2, distance
+    global tilt, pan, distance
     print("scanning...")
     while (True):
         read_serial_data()
 
         if (distance > 5):
 
-            motor1 = change_rad(motor1) # step -> angle(') -> rad
-            motor2 = change_rad(motor2)
+            tilt = change_rad(tilt) # step -> angle(') -> rad
+            pan = change_rad(pan)
 
-            x = (distance*sin(motor1)*cos(motor2))
-            y = (distance*sin(motor1)*sin(motor2))
-            z = ((distance*cos(motor1)))
+            x = (distance*sin(tilt)*cos(pan))
+            y = (distance*sin(tilt)*sin(pan))
+            z = ((distance*cos(tilt)))
             # print(f"변환pos1: {x}, pos2: {y}, distance: {z}")
             
             x = format(x)
@@ -98,11 +98,6 @@ def write_to_file():
             f.write("\n")
             f.flush()
 
-def read_serial():
-    if ArduinoSerial.in_waiting > 0:
-        data = ArduinoSerial.readline().decode().strip()
-        return data
-    return None
 
 def main():
     get_angle()
