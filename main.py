@@ -43,7 +43,7 @@ def read_serial_data():
             tilt, pan, distance = data
             print(f"pos1: {tilt}, pos2: {pan}, distance: {distance}")
 
-def get_angle():
+def write_angle():
     user_input = input("Enter 4 numbers (e.g., 30 45 90 0): ")
 
     if not user_input.strip():  # input value empty

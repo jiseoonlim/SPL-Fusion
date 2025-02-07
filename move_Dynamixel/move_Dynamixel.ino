@@ -94,7 +94,6 @@ void move() {
 
     do {
       dxl_wb.getPresentPositionData(DXL_ID_1, &tilt_position);
-      delay(10); 
     }
     while (abs(tilt_position - tilt) >= 4);
 
@@ -105,19 +104,17 @@ void move() {
       }
       while (abs(pan_position - pan) >= 4);
       Serial.println((String) "s, " + tilt + ", " + pan + ", " + lidarLite.distance() + ", " + (String) "e");
-      delay(1000);
+      delay(100);
     }
-    delay(100);
-    for (int pan = pan_fin; pan >= pan_fin; pan -= step) {
+    for (int pan = pan_fin; pan >= pan_start; pan -= step) {
       dxl_wb.goalPosition(DXL_ID_2, pan);
       do {
         dxl_wb.getPresentPositionData(DXL_ID_2, &pan_position);
       }
       while (abs(pan_position - pan) >= 4);
       Serial.println((String) "s, " + tilt + ", " + pan + ", " + lidarLite.distance() + ", " + (String) "e");
-      delay(1000);
+      delay(100);
     }
-    delay(100);
   }
 }
 
