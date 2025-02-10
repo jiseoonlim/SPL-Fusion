@@ -1,16 +1,12 @@
 import time
-import serial
-from math import cos, sin, pi
-
-ArduinoSerial = serial.Serial('COM6', 115200)
+from math import cos, sin
+from serial_utils import *
+from data_utils import *
 
 
 print("Enter name of file to write to: ")
 filename = input()
 f = open(f'test.txt',"w+")
-
-def format(f): 
-    return "%.0f" %f
 
 def send_signal():
     print("Enter start signal : ")
@@ -19,29 +15,6 @@ def send_signal():
     print(f"Sent signal: {signal}")
     time.sleep(1)
     
-def parse_data(line):
-    global tilt, pan, distance
-    distance = -1
-    try:
-        # parsing each data
-        parts = line.split(',')
-        tilt = int(parts[1].strip())
-        pan = int(parts[2].strip())
-        distance = int(parts[3].strip())
-        return tilt, pan, distance
-    except (IndexError, ValueError):
-        # if some data has an error return None
-        return None
-
-def read_serial_data():
-    line = ArduinoSerial.readline().decode('utf-8', errors='ignore')
-    line = line.strip()
-
-    if line.startswith("s,") and line.endswith(", e"):
-        data = parse_data(line)
-        if data:
-            tilt, pan, distance = data
-            print(f"pos1: {tilt}, pos2: {pan}, distance: {distance}")
 
 def write_angle():
     user_input = input("Enter 4 numbers (e.g., 30 45 90 0): ")
@@ -61,14 +34,6 @@ def write_angle():
             print(f"Sent: {message}")
         else:
             print("Invalid input. Please enter exactly 4 numbers separated by space.")
-
-def change_step(angle):
-    step = angle * 4096/360 
-    return step
-
-def change_rad(step):
-    rad = step * (2*pi)/4096 
-    return rad
 
 def write_to_file():
     global tilt, pan, distance
