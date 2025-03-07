@@ -77,13 +77,11 @@ int tilt = 0;
 int pan = 0;
 int32_t pan_position = 0;
 int32_t tilt_position = 0;
-String command = Serial.readString();
 
 
 void read_serial() {
-  if (Serial.available()) {
-
-    if (command.startsWith("start pos ")) {
+  String command = Serial.readString();
+  if (command.startsWith("start pos ")) {
       tilt_start = Serial.parseInt();
       pan_start = Serial.parseInt(); 
 
@@ -119,8 +117,7 @@ void read_serial() {
       while (abs(pan_position - pan) >= 4);
 
       Serial.println((String) "s, " + tilt + ", " + pan + ", " + lidarLite.distance() + ", " + (String) "e");
-    }
-  }
+    }  
 }
 
 
@@ -129,6 +126,7 @@ void loop() {
   int initialPosition2 = 0;
   dxl_wb.goalPosition(DXL_ID_1, initialPosition1);
   dxl_wb.goalPosition(DXL_ID_2, initialPosition2);  
+  String command = Serial.readString();
 
   if (Serial.available()) {  // Serial 입력이 있을 때만 읽기
     command.trim();  // 개행 문자(\n, \r) 제거
