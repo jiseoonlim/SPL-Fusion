@@ -79,56 +79,82 @@ int32_t pan_position = 0;
 int32_t tilt_position = 0;
 
 
+// void read_serial() {
+//   if (Serial.available()) { // Serial 입력이 있는 경우에만 실행
+//     String command = Serial.readString();
+//     command.trim();  // 개행 문자(\n, \r) 제거
+//     if (command.startsWith("start ")) {
+//       command = command.substring(6);  // "start " 이후의 문자열만 추출
+//       int spaceIndex = command.indexOf(' ');  // 첫 번째 공백 찾기
+
+//       if (spaceIndex != -1) {  // 공백이 존재하면
+//         String tilt_str = command.substring(0, spaceIndex);  // 첫 번째 숫자
+//         String pan_str = command.substring(spaceIndex + 1);  // 두 번째 숫자
+
+//         tilt_start = tilt_str.toInt();
+//         pan_start = pan_str.toInt();
+
+//         Serial.print("Parsed values: ");
+//         Serial.print(tilt_start);
+//         Serial.print(", ");
+//         Serial.println(pan_start);
+        
+//         dxl_wb.goalPosition(DXL_ID_1, tilt_start);
+//         do {
+//           dxl_wb.getPresentPositionData(DXL_ID_1, &tilt_position);
+//         } while (abs(tilt_position - tilt_start) >= 4);
+
+//         dxl_wb.goalPosition(DXL_ID_2, pan_start);
+//         do {
+//           dxl_wb.getPresentPositionData(DXL_ID_2, &pan_position);
+//         } while (abs(pan_position - pan_start) >= 4);
+
+//         Serial.println((String) "s, " + tilt_start + ", " + pan_start + ", " + lidarLite.distance() + ", " + (String) "e");
+//       }
+//       else {
+//         Serial.println("Error: Could not parse tilt and pan values!");
+//       }
+//     }
+    
+//     else if(command.startsWith("pos ")){
+//       tilt = Serial.parseInt();
+//       pan = Serial.parseInt(); 
+
+//       dxl_wb.goalPosition(DXL_ID_1, tilt);
+//       do {
+//         dxl_wb.getPresentPositionData(DXL_ID_1, &tilt_position);
+//       }
+//       while (abs(tilt_position - tilt) >= 4);
+
+//       dxl_wb.goalPosition(DXL_ID_2, pan);
+//       do {
+//         dxl_wb.getPresentPositionData(DXL_ID_2, &pan_position);
+//       }
+//       while (abs(pan_position - pan) >= 4);
+
+//       Serial.println((String) "s, " + tilt + ", " + pan + ", " + lidarLite.distance() + ", " + (String) "e");
+//     }
+//   }
+// }
+
 void read_serial() {
-  String command = Serial.readString();
-  if (command.startsWith("start pos ")) {
-      tilt_start = Serial.parseInt();
-      pan_start = Serial.parseInt(); 
-
-      dxl_wb.goalPosition(DXL_ID_1, tilt_start);
-      do {
-        dxl_wb.getPresentPositionData(DXL_ID_1, &tilt_position);
-      }
-      while (abs(tilt_position - tilt_start) >= 4);
-
-      dxl_wb.goalPosition(DXL_ID_2, pan_start);
-      do {
-        dxl_wb.getPresentPositionData(DXL_ID_2, &pan_position);
-      }
-      while (abs(pan_position - pan_start) >= 4);
-
-      Serial.println((String) "s, " + tilt_start + ", " + pan_start + ", " + lidarLite.distance() + ", " + (String) "e");
-    }
-
-    else if(command.startsWith("pos ")){
-      tilt = Serial.parseInt();
-      pan = Serial.parseInt(); 
-
-      dxl_wb.goalPosition(DXL_ID_1, tilt);
-      do {
-        dxl_wb.getPresentPositionData(DXL_ID_1, &tilt_position);
-      }
-      while (abs(tilt_position - tilt) >= 4);
-
-      dxl_wb.goalPosition(DXL_ID_2, pan);
-      do {
-        dxl_wb.getPresentPositionData(DXL_ID_2, &pan_position);
-      }
-      while (abs(pan_position - pan) >= 4);
-
-      Serial.println((String) "s, " + tilt + ", " + pan + ", " + lidarLite.distance() + ", " + (String) "e");
-    }  
+  if (Serial.available()) {
+    String command = Serial.readString();
+    Serial.print("Received: ");  // 수신된 데이터 출력
+    Serial.println(command);
+    
+    command.trim();
+  }
 }
-
 
 void loop() {
   int initialPosition1 = 0;    // 초기 위치
   int initialPosition2 = 0;
   dxl_wb.goalPosition(DXL_ID_1, initialPosition1);
   dxl_wb.goalPosition(DXL_ID_2, initialPosition2);  
-  String command = Serial.readString();
 
   if (Serial.available()) {  // Serial 입력이 있을 때만 읽기
+    String command = Serial.readString();
     command.trim();  // 개행 문자(\n, \r) 제거
 
     if (command == "reset") {
